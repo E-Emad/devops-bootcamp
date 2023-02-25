@@ -39,3 +39,33 @@ Integrates very well with Kubernetes, offering monitoring of the k8s cluster nod
 
 **Install Prometheus stack in K8s cluster**
 
+1. `eksctl create cluster --name online-shop --node-type t3.medium --nodes 2` - will createa a k8s cluster with two nodes of t3.medium type
+
+2. Add the helm repo where the Prometheus is located using: `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`. 
+
+3. Deploy microservices in the cluster using: `kubectl apply -f microservices.yaml`
+
+4. Create monitoring namespace with `kubectl create namespace monitoring`
+
+5. Install the chart using Helm: `helm install monitoring prometheus-community/kube-prometheus-stack -n monitoring`
+
+6. `kubectl get all -n monitoring` - see everything that has been deployed in the monitoring namespace
+
+
+`statefulset.apps/prometheus-monitoring-kube-prometheus-prometheus` - Prometheus server which is managed by Operator\
+`deployment.apps/monitoring-kube-state-metrics` - own Helm chart - it scrapes K8s components itself and makes them available for Prometheus\ 
+`daemonset.apps/monitoring-prometheus-node-exporter` - run on every worker node of K8s. It connects to the server and translate server metrics (CPU, etc) for Prometheus to understand
+
+ConfigMaps and Secrets are also managed by the Operator.
+
+CRDs - extension of K8s API - custom resource definitions
+
+7. `kubectl port-forward service/monitoring-kube-prometheus-prometheus 9090:9090 -n monitoring &` - PrometheusUI (process running in the background)
+
+8. `kubectl port-forward service/monitoring-grafana 8080:80 -n monitoring &` - Grafana (admin / prom-operator)
+
+---
+
+## Project 2
+
+****
