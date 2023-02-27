@@ -68,4 +68,21 @@ CRDs - extension of K8s API - custom resource definitions
 
 ## Project 2
 
-****
+**Create Alert Rules for the application**
+
+Because we are using Prometheus Operator deployed in the K8s stack, we can define the Alert Rules as CRDs and Operator will tell the Prometheus to add the new rules to it's configuration and reload the alert configuration. Otherwise, we would need to edit the configuration file of the Prometheus server itself. 
+
+1. Create `alert-rules.yaml` containing 2 rules. 
+
+2. Apply the CRDs in the monitoring namespace 
+
+3. Prmoetheus hand over to Alert manager the firing alert
+
+4. Configure Alertmanager to send Email 
+
+- which alert to which receiver ?
+- create CRD for Alertmanager - `alertmanager-config.yaml` and apply the changes
+- create `email-secret.yaml` which will have the password of the email with name `gmail-auth-secret` and data with key `password` and value of the password base64 encoded.
+- enable allow less secure apps on Gmail in order to send an email programatically 
+
+
