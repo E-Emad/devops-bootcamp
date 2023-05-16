@@ -120,3 +120,39 @@ We can monitor Redis for different metrics (under load, too many connections, re
 3. Create Redis Dashboard
 
 - Use existing Redis Dashboard - https://grafana.com/grafana/dashboards/763-redis-dashboard-for-prometheus-redis-exporter-1-x/
+
+---
+
+## Project 4
+
+**Configure monitoring for own application**
+
+- we have to define the metrics
+- use Prometheus Client Librariers in the application we want to monitor - one for each programming language
+
+1. Expose metrics for a Nodejs app
+
+- expose 2 metrics: Number of requests and duration of them
+
+2. Build Docker image for the Nodejs app
+
+- `docker build -t negru1andrei/demo-monitoring:nodeapp .`
+- `docker login`
+
+3. Push to repo
+
+- `docker push negru1andrei/demo-monitoring:nodeapp`
+
+4. Deploy app into k8s cluster
+
+- `k8s-config.yaml` used to deploy into cluster
+- `kubectl apply -f k8s-config.yaml`
+
+5. Create a ServiceMonitor that points to /metrics
+
+- `kubectl apply -f k8s-config.yaml` 
+
+6. Visualize data inside Grafana
+
+- `rate(http_request_operations_total[2])` - requests/s 
+- `rate(http_request_duration_seconds_sum[2])` - duration of the requests
