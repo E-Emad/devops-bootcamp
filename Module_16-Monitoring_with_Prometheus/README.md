@@ -84,5 +84,39 @@ Because we are using Prometheus Operator deployed in the K8s stack, we can defin
 - create CRD for Alertmanager - `alertmanager-config.yaml` and apply the changes
 - create `email-secret.yaml` which will have the password of the email with name `gmail-auth-secret` and data with key `password` and value of the password base64 encoded.
 - enable allow less secure apps on Gmail in order to send an email programatically 
+- under the route, we specify using matchers the name of the alerts and to which receiver to be sent
 
+5. Apply configurations
 
+- `kubectl apply -f email-secret.yaml`
+- `kubectl apply -f alertmanager-config.yaml`
+
+Alert manager config is automatically picked up by the Alert Manager application
+
+---
+
+## Project 3
+
+**Configure monitoring for a Third-party Application**
+
+We can monitor Redis for different metrics (under load, too many connections, redis instance is down, etc). We have to use Prometheus Exporter - which is an app that \ connects to the Redis service and translates those metrics in a time-series data and will expose to /metrics endpoint where Prometheus will scrape that. Custom k8s \ resource must be deployed together with the exporter - called ServiceMonitor 
+
+1. Deploy Redis Exporter
+
+- use Helm Chart - which has everything we need configured inside
+- https://github.com/prometheus-community/helm-charts/tree/main/charts/prometheus-redis-exporter
+- `redis-values.yaml` - used to override the default values of the Redis Exporter Chart - we need `release: monitoring` in order to link the ServiceMonitor with Prometheus
+- Prometheus Rules can be configured in the Chart, but because we can modify them multiple times, it's better to create them separately 
+
+- `helm repo add prometheus-community https://prometheus-community.github.io/helm-charts`
+- `helm repo update`
+- `helm install redis-exporter prometheus-community/prometheus-redis-exporter -f redis-values.yaml`
+
+2. Configure Alert Rules - when Redis is down or it has to many connections 
+
+- `https://samber.github.io/awesome-prometheus-alerts/rules#redis` - Rules already made for a lot of services
+- `kubectl apply -f redis-rules.yaml` - in default namespace
+
+3. Create Redis Dashboard
+
+- Use existing Redis Dashboard - https://grafana.com/grafana/dashboards/763-redis-dashboard-for-prometheus-redis-exporter-1-x/
