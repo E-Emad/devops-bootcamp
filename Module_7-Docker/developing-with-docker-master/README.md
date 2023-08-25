@@ -95,3 +95,73 @@ Step 3: When stopping, make sure you allow suffiecient time for database to full
 - To persist data you have to create a volume and attach it to the container
 - To find the actual file where the volume is mounted on the host, you have to: docker inspect volume_name
 
+## Project 1
+
+**Node using mongodb and Mongo express - containers**
+
+1. Create a docker network for Mongo and Mongo-express to communicate
+
+`docker network create mongo-network`
+
+2. Build the docker image for the app from the Dockerfile
+
+`docker build -t my-app:1.0 .` - will create an image called `my-app:1.0` 
+
+3. Create a mongodb container from the mongo image
+
+```docker run -d \
+-p 27017:27017 \
+-e MONGO_INITDB_ROOT_USERNAME=admin \
+-e MONGO_INITDB_ROOT_PASSWORD=password \
+--name mongodb \
+--network mongo-network \ 
+mongo
+```
+
+4. Create the mongo-express container and connect to mongodb container
+
+```docker run -d \
+-p 8081:8081 \
+-e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+-e ME_CONFIG_MONGODB_ADMINPASSWORD=password \
+-e ME_CONFIG_MONGODB_SERVER=mongodb \
+--name mongo-express \
+--network mongo-network \ 
+mongo-express
+```
+
+`docker container prune` - if you created the containers without specifying the network, you can remove all of the stopped containers with this command 
+
+5. Start de nodejs application as a docker container in the same network as the mongo and mongo-express
+
+```docker run -d \
+-p 3000:3000 \
+--name my-app \
+--network mongo-network \
+my-app:1.0
+```
+
+Note: Stopping and starting a Docker container using the docker stop and docker start commands is a safe way to temporarily halt the container without deleting its data. If you want to ensure data persistence across container restarts and even container removals, it's a good practice to use Docker volumes or other data persistence mechanisms.
+
+---
+
+## Project 2
+
+**Run containers with docker-compose**
+
+1. Make sure to use `mongoUrlDockerCompose` url in the `server.js`. 
+
+2. If you changed the code in `server.js`, make sure you build the image again. 
+
+`docker build -t my-app:2.0 .`
+
+3. Run `docker-compose up -d` to start all 3 containers
+
+
+---
+
+## Project 3
+
+**Dockerize nodejs app and push to private Docker registry (ECR)**
+
+1. 
