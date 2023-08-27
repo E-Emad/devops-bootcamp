@@ -1,7 +1,7 @@
 version: '3'
 services:
-  my-app:
-    image: my-app:2.0
+  nodejs-app:
+    image: 447090147243.dkr.ecr.eu-central-1.amazonaws.com/nodejs-app:1.1
     ports:
      - 3000:3000
   mongodb:

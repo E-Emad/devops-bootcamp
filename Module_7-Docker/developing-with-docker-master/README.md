@@ -193,9 +193,27 @@ Note: If you have multiple AWS accounts configured in config and credentials, yo
 
 **Deploy Nodejs app with Mongo and Mongo-express on a server using docker-compose**
 
+1. Change the code in `server.js` in order to use `mongoUrlDockerCompose` variable because when building multiple containers with \
+docker-compose they can connect to each other using only the container name, no need for localhost and port. 
 
+2. Build the `nodejs-app` image from the Dockerfile
+
+`docker build -t nodejs-app:1.1 .`
+
+3. Rename the image to contain the repository name from ECR
+
+`docker tag nodejs-app:1.1 447090147243.dkr.ecr.eu-central-1.amazonaws.com/nodejs-app:1.1`
+
+4. Push the image to ECR
+
+`docker push 447090147243.dkr.ecr.eu-central-1.amazonaws.com/nodejs-app:1.1`
+
+5. Create the docker-compose file
+
+6. Run all 3 containers using `docker-compose up -d`
 
 ---
+
 
 # Docker resources
 
