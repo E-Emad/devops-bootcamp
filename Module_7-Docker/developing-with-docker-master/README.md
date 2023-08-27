@@ -214,6 +214,25 @@ docker-compose they can connect to each other using only the container name, no 
 
 ---
 
+## Project 5 
+
+**Persist data with Docker Volumes**
+
+Note: If a container is re-created, all the data is lost. To persist the data in mongodb container, we can use volumes. \
+3 types of volumes: - where you specify the exact path on the host machine and the path in container \ 
+                    - anonymous volumes - you just specify the path on the container and docker will create a new has directory under /docker/volumes \
+                    - named volumes - any_name:/path_in_container (best to use in production) \
+
+In the docker-compose file you list all the volumes you want to attach to the containers using the following: \
+
+```volumes:
+  mongo-data:
+    driver: local #used to specify that local filesystem will be used for mounting (filesystem of the host that docker container is running on)
+```
+
+When using `docker-compose up`, new containers with a fresh state will be created, but because of the volumes, all the data will be persisted.
+
+---
 
 # Docker resources
 
