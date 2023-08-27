@@ -164,4 +164,42 @@ Note: Stopping and starting a Docker container using the docker stop and docker 
 
 **Dockerize nodejs app and push to private Docker registry (ECR)**
 
-1. 
+Note: If you have multiple AWS accounts configured in config and credentials, you can switch between them by setting the environment variable `export AWS_DEFAULT_PROFILE=nameoftheprofile`. Now `--profile nameoftheprofile` can be omitted. 
+
+
+1. Create `nodejs-app` repository in AWS ECR.
+    - will contain every tags of that image. 
+    - for another image, a new repository must be created.
+
+2. Login to AWS ECR
+
+`aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin 447090147243.dkr.ecr.eu-central-1.amazonaws.com`
+
+3. Build the `nodejs-app` image from the Dockerfile
+
+`docker build -t nodejs-app .`
+
+4. Rename the image to contain the repository name from ECR
+
+`docker tag nodejs-app:latest 447090147243.dkr.ecr.eu-central-1.amazonaws.com/nodejs-app:1.0`
+
+5. Push the image to ECR
+
+`docker push 447090147243.dkr.ecr.eu-central-1.amazonaws.com/nodejs-app:1.0`
+
+---
+
+## Project 4
+
+**Deploy Nodejs app with Mongo and Mongo-express on a server using docker-compose**
+
+
+
+---
+
+# Docker resources
+
+● Best practices for writing Dockerfiles: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+● Docker development best practices: https://docs.docker.com/develop/dev-best-practices/
+● Tips for Caching, reducing Image size, maintainability, reproducibility: https://www.docker.com/blog/intro-guide-to-dockerfile-best-practices/
+● Tip: Enforce Dockerfile best practices automatically by using a static code analysis tool (e.g. https://github.com/hadolint/hadolint )
