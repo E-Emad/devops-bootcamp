@@ -234,6 +234,19 @@ When using `docker-compose up`, new containers with a fresh state will be create
 
 ---
 
+## Docker best practices
+
+1. Use only offical/trusted docker images in order to avoid malware.
+2. Use specific image versions. Using the latest version of a software, may break your app unintentionally.
+3. Use leaner images like alpine. You don't need a full-fledged system OS with all the utilities.
+4. Optimize caching image layers. Try to keep least frequently changed layers right after the base image and most frequently changed layers at the end.
+5. Use .dockerignore 
+6. Make use of Multi-stage builds. One image that install the dependecies and build the app and one final image which will have only the file needed to run the application. 
+7. Use least privileged user, not root user.
+8. Always scan your images for vulnerabilities. 
+9. Don't leak sensitive data into docker images. 
+
+
 # Docker resources
 
 ● Best practices for writing Dockerfiles: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
