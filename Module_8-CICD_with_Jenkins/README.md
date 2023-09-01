@@ -148,6 +148,8 @@ You can have the logic in the stages or extract logic in a Groovy script if you 
 `/vars` - contains all the functions that we will call from Jenkinsfile
 `/src` - helper, utility for functions
 
+4. Use the Jenkinsfile from the `jenkins-shared-library-v2` branch and jenkins shared library from `https://github.com/ngrandrei/jenkins-shared-library.git`
+
 ---
 
 ## Project 4
