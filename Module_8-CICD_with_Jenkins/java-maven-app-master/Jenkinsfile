@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    gv.buildImage "2.2.2"
+                    gv.buildImage "2.2.4"
                 }
             }
         }

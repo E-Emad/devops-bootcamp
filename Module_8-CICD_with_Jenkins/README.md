@@ -154,6 +154,21 @@ You can have the logic in the stages or extract logic in a Groovy script if you 
 
 ## Project 4
 
+**Configure Webhook to trigger CI Pipeline automatically on every change**
+
+GitHub should be configured to notify Jenkins to trigger a build.\
+
+There can be scheduled builds for example for long running e2e tests, or automatic triggering when a new commit is pushed to repo.\
+
+1. Install Generic Webhook trigger plugin
+
+2. In the Pipeline configuration, select GitHub hook trigger for GITScm polling
+
+3. In the GitHub -> Webhooks create a webhook for the following URL: `http://3.67.201.167:8080/github-webhook/` which is the URL of the Jenkins server.
+
+Webhooks allow external services to be notified when certain events happen
+
+4. Now at every pushes, the pipeline will be triggered.
 ---
 
 ## Project 5
