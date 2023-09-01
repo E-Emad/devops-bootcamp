@@ -15,20 +15,20 @@ pipeline {
                 }
             }
         }
-        stage("increment version") {
-            steps {
-                script {
-                dir("./Module_8-CICD_with_Jenkins/java-maven-app-master/") { 
-                sh 'mvn build-helper:parse-version versions:set \
-                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
-                        versions:commit'
-                def matcher = readFile('pom.xml') =~ '<version>(.+)</version>' //regex to match every line containing every version
-                def version = matcher[0][1] //first line containing version > child (actual string with the version number)
-                env.IMAGE_NAME = "$version-$BUILD_NUMBER"
-                    }
-                }  
-            }
-        }
+        // stage("increment version") {
+        //     steps {
+        //         script {
+        //         dir("./Module_8-CICD_with_Jenkins/java-maven-app-master/") { 
+        //         sh 'mvn build-helper:parse-version versions:set \
+        //                 -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+        //                 versions:commit'
+        //         def matcher = readFile('pom.xml') =~ '<version>(.+)</version>' //regex to match every line containing every version
+        //         def version = matcher[0][1] //first line containing version > child (actual string with the version number)
+        //         env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+        //             }
+        //         }  
+        //     }
+        // }
         stage("build java jar") {
             steps {
                 script {
@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    gv.buildImage()
+                    gv.buildImage "2.2.2"
                 }
             }
         }
@@ -54,18 +54,18 @@ pipeline {
             }
         }
 
-        stage("commit version bump") {
-            steps {
-                    sshagent(credentials: ["855abb51-d17f-421d-8723-6dd79a22f1fa"]) {
-                        sh 'git config user.email "jenkins@test.com"'
-                        sh 'git config user.name "jenkins"'
-                        sh "git remote set-url origin git@github.com:ngrandrei/devops-bootcamp.git"
-                        sh "git add ."
-                        sh 'git commit -m "version bump"'
+        // stage("commit version bump") {
+        //     steps {
+        //             sshagent(credentials: ["855abb51-d17f-421d-8723-6dd79a22f1fa"]) {
+        //                 sh 'git config user.email "jenkins@test.com"'
+        //                 sh 'git config user.name "jenkins"'
+        //                 sh "git remote set-url origin git@github.com:ngrandrei/devops-bootcamp.git"
+        //                 sh "git add ."
+        //                 sh 'git commit -m "version bump"'
                         
-                        sh "git push origin HEAD:main"
-                    }
-            }
-        }
+        //                 sh "git push origin HEAD:main"
+        //             }
+        //     }
+        // }
     }   
 }
