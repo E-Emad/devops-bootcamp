@@ -166,7 +166,9 @@ There can be scheduled builds for example for long running e2e tests, or automat
 
 3. In the GitHub -> Webhooks create a webhook for the following URL: `http://3.67.201.167:8080/github-webhook/` which is the URL of the Jenkins server.
 
-Webhooks allow external services to be notified when certain events happen
+Webhooks allow external services to be notified when certain events happen.\
+
+Make sure that the Inbound rules for the EC2 allows traffic from the GitHub server on port 8080. 
 
 4. Now at every pushes, the pipeline will be triggered.
 ---
