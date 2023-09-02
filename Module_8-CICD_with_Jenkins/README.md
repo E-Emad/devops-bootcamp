@@ -171,6 +171,7 @@ Webhooks allow external services to be notified when certain events happen.\
 Make sure that the Inbound rules for the EC2 allows traffic from the GitHub server on port 8080. 
 
 4. Now at every pushes, the pipeline will be triggered.
+
 ---
 
 ## Project 5
