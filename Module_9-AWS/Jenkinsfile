@@ -11,7 +11,7 @@ pipeline {
         stage("init") {
             steps {
                 script {
-                    gv = load "../Module_8-CICD_with_Jenkins/java-maven-app-master/script.groovy"
+                    gv = load "Module_9-AWS/script.groovy"
                 }
             }
         }
