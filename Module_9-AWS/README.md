@@ -56,3 +56,18 @@ Each VPC has many Subnets which spans over AZs. Subnets can be public or private
 ---
 
 ## Project 2 
+
+**Deploy Application from Jenkins Pipeline to EC2 Instance (automatically with docker)**
+
+1. I'll use the java maven app defined in `Module_8-CICD_with_Jenkins/java-maven-app-master`
+
+2. Install the SSH Agent plugin on the Jenkins server
+
+3. Store the key .pem used to ssh on the EC2 in the Jenkins credentials
+
+4. Create a new pipeline in Jenkins that will use the Jenkinsfile and script.groovy from `Module_9-AWS`
+
+5. Make sure to edit the Security group of the ec2 instance to allow incoming traffic on port 8080 coming from the IP of the Jenkins server.
+
+
+
