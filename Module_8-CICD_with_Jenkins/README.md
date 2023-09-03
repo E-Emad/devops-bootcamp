@@ -192,13 +192,5 @@ Running the pipeline again, code will be cloned from GitHub and version of the a
 
 3. `sh "git remote set-url origin https://${TOKEN}@github.com/ngrandrei/devops-bootcamp.git"` ==> this nos not secure, never use Groovy String interpolation with credentials.\
 
-Take the token in an env variable using: 
-
-```
-    environment {
-        GITHUB_ACCESS_TOKEN = credentials('github-access-token')
-    }
-```
-
-then use single quotes when calling the script: `sh 'git remote set-url origin https://$TOKEN@github.com/ngrandrei/devops-bootcamp.git'`.
+Use single quotes when calling the script: `sh 'git remote set-url origin https://$TOKEN@github.com/ngrandrei/devops-bootcamp.git'`.
 
