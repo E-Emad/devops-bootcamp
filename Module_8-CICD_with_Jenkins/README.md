@@ -184,7 +184,11 @@ Make sure that the Inbound rules for the EC2 allows traffic from the GitHub serv
 -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
 versions:commit` -> this reads the pom.xml, increment patch version by one and save the newly created pom.xml
 
-- `mvn clean package` -> first it deletes the /target directory where the artifacts are stored and then build the app and save the artifact in a clean /target
+- `mvn clean package` -> first it deletes the /target directory where the artifacts are stored and then build the app and save the artifact in a clean /target\
+
+Running the pipeline again, code will be cloned from GitHub and version of the app in the pom.xml would be the same, even if we've had increased the version. Solution: in Jenkinsfile, last stage in the pipeline should commit the version bump to GitHub.
+
+
 
 2. Commit version bump (newly created pom.xml) created by Jenkins to Git
 

@@ -53,6 +53,21 @@ pipeline {
                 }
             }
         }
+        stage("commit version bump") {
+            steps {
+                    script {
+                        withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        sh 'git config user.email "jenkins@example.com"'
+                        sh 'git config user.name "jenkins"'
+                        sh "git remote set-url origin https://${USER}:${PASS}@github.com/ngrandrei/devops-bootcamp.git"
+                        sh "git add ."
+                        sh 'git commit -m "version bump to \\\${env.IMAGE_NAME}"'
+                        
+                        sh "git push origin HEAD:main"
+                        }
+                    }
+            }
+        }
 
         // stage("commit version bump") {
         //     steps {
