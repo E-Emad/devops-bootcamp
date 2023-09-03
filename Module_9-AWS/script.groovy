@@ -14,7 +14,7 @@ def buildImage(String IMAGE_NAME) {
 } 
 
 def deployApp(String IMAGE_NAME) {
-    def dockerCmd = "docker run -d -p 8080:8080 ${IMAGE_NAME}"
+    def dockerCmd = "docker run -d -p 8080:8080 negru1andrei/java-maven-app:${IMAGE_NAME}"
     sshagent(credentials: ['ec2-key']) {
         sh "ssh -o StrictHostKeyChecking=no ec2-user@18.194.140.242 ${dockerCmd}"
     }

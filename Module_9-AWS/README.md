@@ -67,9 +67,34 @@ Each VPC has many Subnets which spans over AZs. Subnets can be public or private
 
 4. Create a new pipeline in Jenkins that will use the Jenkinsfile and script.groovy from `Module_9-AWS`
 
+```
+stage("deploy the image") {
+            steps {
+                script {
+                    echo "deploying"
+                    gv.deployApp "2.2.7-11"
+                }
+            }
+        }
+```
+
+and function in Groovy:
+
+```
+def deployApp(String IMAGE_NAME) {
+    def dockerCmd = "docker run -d -p 8080:8080 negru1andrei/java-maven-app:${IMAGE_NAME}"
+    sshagent(credentials: ['ec2-key']) {
+        sh "ssh -o StrictHostKeyChecking=no ec2-user@18.194.140.242 ${dockerCmd}"
+    }
+}
+```
+
 5. Make sure to edit the Security group of the ec2 instance to allow incoming traffic on port 8080 and port 22 for SSH coming from the IP of the Jenkins server.
 
-6. 
+6. Make sure to login to Docker Hub from the ec2 instance. 
+
+---
+
 
 
 
