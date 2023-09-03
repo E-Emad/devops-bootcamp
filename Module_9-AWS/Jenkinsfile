@@ -35,7 +35,11 @@ pipeline {
             steps {
                 script {
                     echo "deploying"
-                    gv.deployApp "2.2.7-11"
+                    //gv.deployApp "2.2.7-11"
+                    def dockerCmd = "docker run -d -p 8080:8080 2.2.7-11"
+                    sshagent(credentials: ['ec2-key']) {
+                        sh "ssh -o StrictHostKeyChecking=no ec2-user@18.194.140.242 2.2.7-11"
+                    }
                 }
             }
         }

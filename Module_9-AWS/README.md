@@ -67,7 +67,9 @@ Each VPC has many Subnets which spans over AZs. Subnets can be public or private
 
 4. Create a new pipeline in Jenkins that will use the Jenkinsfile and script.groovy from `Module_9-AWS`
 
-5. Make sure to edit the Security group of the ec2 instance to allow incoming traffic on port 8080 coming from the IP of the Jenkins server.
+5. Make sure to edit the Security group of the ec2 instance to allow incoming traffic on port 8080 and port 22 for SSH coming from the IP of the Jenkins server.
+
+6. 
 
 
 
