@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    gv.buildImage ${IMAGE_NAME}
+                    gv.buildImage env.IMAGE_NAME
                 }
             }
         }
