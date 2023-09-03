@@ -194,3 +194,4 @@ Running the pipeline again, code will be cloned from GitHub and version of the a
 
 Use single quotes when calling the script: `sh 'git remote set-url origin https://$TOKEN@github.com/ngrandrei/devops-bootcamp.git'`.
 
+4. In case webhook is activated to trigger a new build every time there is a code change in GitHub, make sure to configure pipeline to not be triggered in case the commit author is jenkins server. Otherwise, an ifinite loop of triggered builds will be present in Jenkins server. 
