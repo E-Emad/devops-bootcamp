@@ -188,11 +188,17 @@ versions:commit` -> this reads the pom.xml, increment patch version by one and s
 
 Running the pipeline again, code will be cloned from GitHub and version of the app in the pom.xml would be the same, even if we've had increased the version. Solution: in Jenkinsfile, last stage in the pipeline should commit the version bump to GitHub.
 
+2. Create a personal access token in GitHub and create Credentials of type secret text in Jenkins.
 
+3. `sh "git remote set-url origin https://${TOKEN}@github.com/ngrandrei/devops-bootcamp.git"` ==> this nos not secure, never use Groovy String interpolation with credentials.\
 
-2. Commit version bump (newly created pom.xml) created by Jenkins to Git
+Take the token in an env variable using: 
 
-- First you need an SSH Agent plugin 
-- Create Credentials in Jenkins UI and add the private key generated on the Jenkins Server
-- Use the id of the credentials in the sshagent step in Jenkinsfile
-- Enter the jenkins container as jenkinser user and execute the following: `git ls-remote -h git@github.com:ngrandrei/devops-bootcamp.git HEAD` -> The host key for github will now be added to the ~/.ssh/known_hosts file
+```
+    environment {
+        GITHUB_ACCESS_TOKEN = credentials('github-access-token')
+    }
+```
+
+then use single quotes when calling the script: `sh 'git remote set-url origin https://$TOKEN@github.com/ngrandrei/devops-bootcamp.git'`.
+
