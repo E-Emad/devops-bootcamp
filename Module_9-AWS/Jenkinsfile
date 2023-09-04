@@ -34,8 +34,8 @@ pipeline {
         stage("deploy the image") {
             steps {
                 script {
-                    echo "deploying"
-                    gv.deployApp "2.2.7-11"
+                    echo "deploying java and postgres"
+                    gv.deployAppWithDockerCompose "2.2.7-11"
                 }
             }
         }

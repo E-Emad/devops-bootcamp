@@ -95,6 +95,58 @@ def deployApp(String IMAGE_NAME) {
 
 ---
 
+## Project 3
 
+**Deploy Application from Jenkins Pipeline on EC2 Instance (automatically with docker-compose)**
 
+1. Create a docker-compose file in `Module_9-AWS` directory containing the java service and posgresql service. 
 
+2. Create a script in `Module_9-AWS` that runs the docker-compose up on the EC2 server.
+
+```
+export IMAGE_TAG=$1
+docker-compose up -d 
+echo "java app and postgres should be up and running"
+```
+
+3. Install docker-compose on the EC2 
+
+```
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose version
+```
+
+4. Copy the shell script used to start docker-compose and the docker-compose file into the EC2 instance.
+
+- for this, define a separate function in groovy that will deploy the app using docker-compose and also copy necessary files on EC2 server.
+
+```
+def deployAppWithDockerCompose(String IMAGE_NAME) {
+    def shellCmd = "bash my-script.sh ${IMAGE_NAME}"
+    def ec2server = "ec2-user@18.195.148.27"
+
+    sshagent(credentials: ['ec2-key']) {
+        sh "scp Module_9-AWS/docker-compose.yaml ${ec2server}:/home/ec2-user"
+        sh "scp Module_9-AWS/my-script.yaml ${ec2server}:/home/ec2-user"
+        sh "ssh -o StrictHostKeyChecking=no ${ec2server} ${shellCmd}"
+    }
+}
+```
+
+and call the function from Jenkinsfile:
+
+```
+stage("deploy the image") {
+            steps {
+                script {
+                    echo "deploying java and postgres"
+                    gv.deployAppWithDockerCompose "2.2.7-11"
+                }
+            }
+        }
+```
+
+---
