@@ -41,7 +41,7 @@ pipeline {
             steps {
                 script {
                     echo "building image"
-                    gv.buildImage ${env.IMAGE_TAG}
+                    gv.buildImage "${env.IMAGE_TAG}"
                 }
             }
         }
@@ -49,7 +49,7 @@ pipeline {
             steps {
                 script {
                     echo "deploying java and postgres"
-                    gv.deployAppWithDockerCompose ${env.IMAGE_TAG}
+                    gv.deployAppWithDockerCompose "${env.IMAGE_TAG}"
                 }
             }
         }
