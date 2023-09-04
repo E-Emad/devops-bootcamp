@@ -25,8 +25,8 @@ def deployAppWithDockerCompose(String IMAGE_NAME) {
     def ec2server = "ec2-user@18.195.148.27"
 
     sshagent(credentials: ['ec2-key']) {
-        sh "scp Module_9-AWS/docker-compose.yaml ${ec2server}:/home/ec2-user"
-        sh "scp Module_9-AWS/my-script.yaml ${ec2server}:/home/ec2-user"
+        sh "scp -o StrictHostKeyChecking=no Module_9-AWS/docker-compose.yaml ${ec2server}:/home/ec2-user"
+        sh "scp -o StrictHostKeyChecking=no Module_9-AWS/my-script.yaml ${ec2server}:/home/ec2-user"
         sh "ssh -o StrictHostKeyChecking=no ${ec2server} ${shellCmd}"
     }
 }
