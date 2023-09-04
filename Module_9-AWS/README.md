@@ -150,3 +150,48 @@ stage("deploy the image") {
 ```
 
 ---
+
+## Project 4
+
+**Complete the CI/CD Pipeline (Docker-Compose, Dynamic versioning)**
+
+1. Add the version increment stage from the Jenkins module:
+
+```
+stage("increment version") {
+            steps {
+                script {
+                dir("./Module_8-CICD_with_Jenkins/java-maven-app-master/") { 
+                sh 'mvn build-helper:parse-version versions:set \
+                        -DnewVersion=\\\${parsedVersion.majorVersion}.\\\${parsedVersion.minorVersion}.\\\${parsedVersion.nextIncrementalVersion} \
+                        versions:commit'
+                def matcher = readFile('pom.xml') =~ '<version>(.+)</version>' //regex to match every line containing every version
+                def version = matcher[0][1] //first line containing version > child (actual string with the version number)
+                env.IMAGE_NAME = "$version-$BUILD_NUMBER"
+                    }
+                }  
+            }
+        }
+```
+
+2. Add the stage where the new pom.xml containing the new version is commited to the repo: 
+
+```
+stage("commit version bump") {
+            steps {
+                    script {
+                        withCredentials([string(credentialsId: 'github-access-token', variable: 'TOKEN')]) {
+                        sh 'git config user.email "jenkins@example.com"'
+                        sh 'git config user.name "jenkins"'
+                        sh 'git remote set-url origin https://$TOKEN@github.com/ngrandrei/devops-bootcamp.git'
+                        sh "git add ."
+                        sh 'git commit -m "version bump to \\\${env.IMAGE_TAG}"'
+                        
+                        sh "git push origin HEAD:main"
+                        }
+                    }
+            }
+        }
+```
+
+---
