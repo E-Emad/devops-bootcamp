@@ -195,3 +195,26 @@ stage("commit version bump") {
 ```
 
 ---
+
+## Project 5
+
+**AWS CLI**
+
+1. Make sure to to export `AWS_PROFILE=negruandreiuser`
+
+2. Install awscli using Homebrew for MacOS
+
+3. Create EC2 Instance using the AWS CLI with all necessary configurations like Security Group
+
+```
+aws ec2 describe-subnets -> info about subnets -> take subnet id: subnet-0fe48467a2defc870
+aws ec2 create-security-group --group-name awsCliSG --description "SG created from CLI" --vpc-id vpc-0f08d45e98f37d16f -> creates SG in corresponding VPC
+aws ec2 authorize-security-group-ingress --group-id sg-0d4319bf9c4fbd185  --protocol tcp --port 22 --cidr 188.24.28.5/32 -> allow inbound rules on port 22
+aws ec2 run-instances --image-id ami-0766f68f0b06ab145 --count 1 --instance-type "t2.micro" --key-name awsCliKeyPair --security-group-ids \ sg-0d4319bf9c4fbd185 --subnet-id subnet-0fe48467a2defc870 -> creates EC2 instance
+aws ec2 describe-instances --instance-ids i-0125717193073590b --query 'Reservations[0].Instances[0].PublicIpAddress' - will output Public IP
+```
+
+4. Create SSH key pair
+
+`aws ec2 create-key-pair --key-name awsCliKeyPair | jq -r '.KeyMaterial' > awscli-key.pem` - creates a key pair and save the private key locally 
+`chmod 400 awscli-key.pem` - restrict permissions to read-only for current user
