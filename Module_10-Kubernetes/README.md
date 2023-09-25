@@ -24,15 +24,19 @@
 **ConfigMap**
 
 - stores non-confidential data in key-value pairs
+- external configuration for your application 
 - it is a local volume type which can store individual key-value pairs which are passed as env variables to the app/pods or you can store a file which can be mounted inside the container (use case: config file used by the app)
 
 **Secrets**
 
 - same as ConfigMap, but used for sesitive data
+- base64 encoded
+- Secrets and ConfigMaps can be used inside the application as env variables or mounted as a properties file
 
 **Volumes**
 
 - used to persist data if a pod dies (could be local or outside of k8s cluster)
+- volumes are mounted to every pod & when a pod dies, data is persisted in a volume
 
 **Deployment**
 
@@ -51,6 +55,8 @@
 Scaling DB apps:
 - only 1 replica can make changes
 - each replica has it's own storage and those are constantly synchronized
+
+Deploying StatefulSets are not easy, so a simpler solution would be to host all the stateless applications inside the k8s cluster and have separate DBs outside of k8s cluster.
 
 ---
 
@@ -86,13 +92,15 @@ Worker node - containerized apps run on this. It needs much more compute resourc
 Every Worker node needs 3 processes to be installed:\
     - container runtime (cri-o, docker, containerd - very lightweight)\
     - kubelet - agent that makes sure containers are running in pods, talks to server to get resources available\
-    - kube-proxy - network proxy with intelligent forwarding of requests to the pods
+    - kube-proxy - network proxy with intelligent forwarding of requests to the pods\
+                 - enforce (where possible) pods to talk to each other on the same Node to avoid network overhead 
 
 Every Master node has 4 processes:\
     - API Server - single entrypoint to the cluster (kubectl talks to API Server) and is the gatekeeper for authtentication, validating the requests\
-    - Scheduler - just decides on which Node the new pod should be scheduled. It takes into considerations resourcerequirements, hardware/software/policy constraints, data locality\
+    - Scheduler - just decides on which Node the new pod should be scheduled. It takes into considerations resource requirements, hardware/software/policy constraints, data locality - kubelet executes the request coming from the Scheduler\
     - Controller manager - Detects state changes, like crashing of Pods and tries to recover the cluster state as soon as possible. It talks to the scheduler\
     - etcd - store for all cluster data\
+           - all cluster changes are stored here\
 
 As the cluster grows, you have to add more Worker and Master nodes.
 
@@ -100,6 +108,7 @@ Minikube - running as a docker container or as a VM to create a cluster (includi
 
 ## CLI commands
 
+```
 install hyperkit and minikube
 brew update
 brew install hyperkit
@@ -150,6 +159,7 @@ delete with config
 kubectl delete -f nginx-deployment.yaml
 #Metrics
 kubectl top The kubectl top command returns current CPU and memory usage for a cluster’s pods or nodes, or for a particular pod or node if specified.
+```
 
 ## Persisting data in Kubernetes using volumes
 
@@ -165,7 +175,12 @@ kubectl top The kubectl top command returns current CPU and memory usage for a c
 
 **Deploy MongoDB and Mongo Express into local k8s cluster**
 
-1. Create mongodb deployment yaml file
+1. Install minikube (k8s cluster on your local machine - master and worker processes running on a single node)
+
+`minikube start --driver=docker` - start minkube cluster as a docker container
+- kubectl is installed with minikube 
+
+2. Create mongodb deployment yaml file
 
 MongoDB needs two env variables: MONGO_INITDB_ROOT_USERNAME and MONGO_INITDB_ROOT_PASSWORD. Values for those have to be stored in a Secret config file in a base64 encoded format. To encode this, you can use `echo -n "andreinegru" | base64` to get the econded values. (-n option is used to omit echoing trailing newline)
 
@@ -173,19 +188,19 @@ Becasue you reference values from Secret, you have to creat the Secret prior to 
 
 `kubectl get pods -o wide` - show more info about the pods (like IP, node)
 
-2. Create mongodb internal service yaml file
+3. Create mongodb internal service yaml file
 
 Service and Deployment usually lives in the same yaml file.
 
-3. Create mongo espress deployment 
+4. Create mongo espress deployment 
 
 It needs ME_CONFIG_MONGODB_ADMINUSERNAME and ME_CONFIG_MONGODB_ADMINPASSWORD set as env variables in order to connect to mongo db and ME_CONFIG_MONGODB_SERVER which is the MongoDB container name, but since we use pods and services, it will be the name of the mongodb service. We can store this in a ConfigMap since is not sensitive data.
 
-4. Create mongo express service 
+5. Create mongo express service 
 
 This have to be created as a loadbalancer (external service) in order to access it from the browser.
 
-Use `minikube service mongo-express-service` to assign an external IP to the Mongo Express service in order to access it via browser.
+Use `minikube service <mongo-express-service>` to assign an external IP to the Mongo Express service in order to access it via browser.
 
 ---
 
