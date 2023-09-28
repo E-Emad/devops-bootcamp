@@ -104,6 +104,15 @@ Use cases:
 
 You can use `kubens` to change the active namespace, and not use -n with every kubectl command.
 
+**Ingress component**
+
+- used to forward external traffic to the k8s cluster componenets, internal services.
+- Ingress component just defines the rules of redirection and Ingress Controller (pod) evaluates those rules and makes the actual forwardin.
+- Ingress controller is the entrypoint to the cluster. Many 3rd party implementations, for example: k8s nginx ingress controller
+- each Ingress object configures one domain (or 1 domain and multiple subdomains of that domain). If you want 2 domains, you need 2 ingress objects. 
+- to configure https, you need a Secret containing a tls certificate
+
+
 ---
 
 ## Authentication and Authorization in k8s
