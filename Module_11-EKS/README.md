@@ -1,5 +1,24 @@
 # EKS
 
+## Overview
+
+There are multiple container orchestration tools: ECS, Kubernetes, Nomad, Docker Swarm, Mesos.
+
+Container services on AWS:
+ - EKS
+ - ECS
+
+ECS
+- Control plane is managed by AWS
+- Compute fleet composed of EC2 instances. They need Container runtime and ECS Agent in order to communicate with ECS control plane. You still need to manage the infrastructure\
+- Or use AWS Fargate - serverless solution where AWS will manage the worker nodes. Pay only for what you use. Easily scale up or down.
+
+EKS
+- Control plane managed by AWS
+- Worker nodes communicate with Control plane via k8s worker processes
+- better to use because k8s is open-source and has a huge community (usage of Helm charts)
+- offers High Availability - Control plane nodes are place in different AZs
+
 ## Project 1
 
 **Create AWS EKS Cluster with a Node Group**
