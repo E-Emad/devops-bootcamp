@@ -142,6 +142,23 @@ Before passing the yaml file to kubectl, you need to substitute all the env vari
 `envsubst < kubernetes/deployment.yaml | kubectl apply -f -` - substitute all the env variables values in the yaml file and give that file to kubectl\
 `envsubst < kubernetes/service.yaml | kubectl apply -f -`
 
+```
+stage("deploy the image") {
+            environment {
+                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+                APP_NAME = 'java-maven-app'
+            }
+            steps {
+                script {
+                    echo "deploying"
+                    sh "envsubst < kubernetes/deployment.yaml | kubectl apply -f -"
+                    sh "envsubst < kubernetes/service.yaml | kubectl apply -f -"
+                }
+            }
+        }
+```
+
 --- 
 
 ## Project 5
