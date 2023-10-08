@@ -123,7 +123,7 @@ Cluster will be created with default params.\
 
 ---
 
-## Project 4
+## Project 4 combined with Project 6
 
 **Complete CI/CD Pipeline with EKS and private DockerHub registry**
 
@@ -161,7 +161,7 @@ stage("deploy the image") {
 
 --- 
 
-## Project 5
+## Project 7
 
 **Complete CI/CD Pipeline with EKS and AWS ECR**
 
