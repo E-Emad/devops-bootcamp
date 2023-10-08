@@ -54,8 +54,8 @@ pipeline {
             steps {
                 script {
                     echo "deploying"
-                    sh "envsubst < kubernetes/deployment.yaml | kubectl apply -f -"
-                    sh "envsubst < kubernetes/service.yaml | kubectl apply -f -"
+                    sh "envsubst < Module_8-CICD_with_Jenkins/java-maven-app-master/kubernetes/deployment.yaml | kubectl apply -f -"
+                    sh "envsubst < Module_8-CICD_with_Jenkins/java-maven-app-master/kubernetes/service.yaml | kubectl apply -f -"
                 }
             }
         }

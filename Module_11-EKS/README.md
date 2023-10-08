@@ -131,7 +131,7 @@ Cluster will be created with default params.\
 
 2. Create deployment and service yaml for the Java app in Module_8-CICD_with_Jenkins
 
-3. Create authentication of the k8s cluster with the private docker repo
+3. Create authentication of the k8s cluster with the private docker repo (Secret in k8s cluster)
 
 `kubectl create secret docker-registry my-registry-key --docker-server=docker.io --docker-username=negru1andrei --docker-password=password`
 
