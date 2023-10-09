@@ -59,31 +59,181 @@ An example could be a module for EC2 instance with configured networking and per
 
 ## Project 1 
 
-**Automate AWS Infrastructure**
+**Automate AWS Infrastructure - Provision EC2 and deploy Nginx container**
 
-If using multiple AWS accounts, use env variable `AWS_PROFILE` in the shell to set the one you want to use.
+If using multiple AWS accounts, use env variable `AWS_PROFILE` in the shell to set the one you want to use.\
+Use `terraform fmt` to automatically format terraform files. 
 
-1. Create VPC and Subnet 
+1. Create VPC and 1 Subnet in one AZ
 
-2. Created custom Route Table
+- changing the AZ of the subnet, the subnet will be destroyed then re-created
+- NACL to subnet level - everything is open by default
+- SG to ec2 level - everything is closed by default
+- when creating a VPC, a route table is created by default but as a best practice, create new components, don't use the default ones
+
+```
+resource "aws_vpc" "myapp_vpc" {
+  cidr_block = var.vpc_cidr_block
+  tags = {
+    Name : "${var.env_prefix}-vpc"
+  }
+}
+
+resource "aws_subnet" "myapp_subnet_1" {
+  vpc_id     = aws_vpc.myapp_vpc.id
+  cidr_block = var.subnet_cidr_block
+  availability_zone = var.avail_zone
+
+  tags = {
+    Name : "${var.env_prefix}-subnet-1"
+  }
+}
+```
+
+2. Created custom Route Table & Internet Gateway
+
+```
+resource "aws_internet_gateway" "myapp_igw" {
+  vpc_id = aws_vpc.myapp_vpc.id
+
+  tags = {
+    Name = "${var.env_prefix}-igw"
+  }
+}
+
+resource "aws_route_table" "myapp_rtb" {
+  vpc_id = aws_vpc.myapp_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.myapp_igw.id
+  }
+
+  tags = {
+    Name = "${var.env_prefix}-rtb"
+  }
+}
+```
 
 3. Added Subnet Association with Route Table
 
+- by default, the subnet is associated with the Main route table of the VPC. You have to explicitly associate the new route table created to the subnet.
+
+```
+resource "aws_route_table_association" "rtb_subnet_association" {
+    route_table_id = aws_route_table.myapp_rtb.id
+    subnet_id = aws_subnet.myapp_subnet_1.id
+}
+```
+
 4. Created Security Group
+
+- allow incoming traffic on port 22 and 8080 
+- allow everything on the egress (traffic leaving the server) 
+- default security group is created when creating a VPC, you can use the default one, or create a new SG
+
+```
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
+}
+```
+- this can be used to automatically detect the ip address of your laptop, just keep in mind the apply again the configuration when changing the network
+
+```
+resource "aws_security_group" "myapp_sg" {
+  name   = "myapp_sg"
+  vpc_id = aws_vpc.myapp_vpc.id
+
+  ingress {
+    description      = "ssh on port 22"
+    from_port        = 22
+    to_port          = 22
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description      = "http on port 8080"
+    from_port        = 8080
+    to_port          = 8080
+    protocol         = "tcp"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.env_prefix}-sg"
+  }
+}
+```
 
 5. Created EC2 Instance (Fetch AMI, Create ssh key-pair and download .pem file and restrict permission)
 
+- ami must be dynamically specified
+- changing the subnet id of an instance, will force the re-creation of that instance and place it to corresponding subnet
+- specifying `associate_public_ip_address = true` after creation, forces the re-creation of the instance
+
 6. Configured ssh key pair in Terraform config file
+
+```
+resource "aws_key_pair" "myapp_key_pair" {
+    key_name   = "${var.env_prefix}-key"
+    public_key = file(var.key_location)
+}
+```
+
+- if you update the public_key, the Terraform won't automatically recreate the ec2 server associated with the public key. You have to destroy it and recreate the instance by yourself. This can cause downtime. 
+- `terraform destroy -target=aws_instance.myapp_server` can be used to destroy the ec2 server
 
 7. Created EC2 Instance
 
+```
+resource "aws_instance" "myapp_server" {
+  ami                    = data.aws_ami.amzn_linux_2023_ami.id
+  instance_type          = var.instance_type
+  subnet_id              = aws_subnet.myapp_subnet_1.id
+  vpc_security_group_ids = [aws_security_group.myapp_sg.id]
+  availability_zone = var.avail_zone
+
+  associate_public_ip_address = true
+  key_name = aws_key_pair.myapp_key_pair.key_name
+
+  user_data_replace_on_change = true
+
+
+  tags = {
+    Name = "${var.env_prefix}-server"
+  }
+}
+
+output "myapp_ip" {
+    value = aws_instance.myapp_server.public_ip
+}
+```
+
 8. Configured Terraform to install Docker and run nginx image
+
+```
+user_data = <<-EOF
+                #!/bin/bash
+                sudo yum update -y && sudo yum install -y docker
+                sudo systemctl start docker
+                sudo usermod -aG docker ec2-user
+                sudo docker run -p 8080:80 nginx
+                EOF
+```
 
 Best practices:
 - Create own VPC and leave the defaults created by AWS as is
 - Security:  Store your .pem file ssh private key in .ssh folder. Restrict permission (only read for our User) on .pem file
 - Security: Don’t hardcode public_key in Terraform config file!
-
+- Terraform should be used only for initial infrastructure setup, manage infrastructure, initial application setup, and NOT to manage applications!
 
 ---
 
