@@ -61,6 +61,8 @@ An example could be a module for EC2 instance with configured networking and per
 
 **Automate AWS Infrastructure**
 
+If using multiple AWS accounts, use env variable `AWS_PROFILE` in the shell to set the one you want to use.
+
 1. Create VPC and Subnet 
 
 2. Created custom Route Table
