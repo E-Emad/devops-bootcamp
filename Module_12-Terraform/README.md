@@ -61,6 +61,8 @@ An example could be a module for EC2 instance with configured networking and per
 
 **Automate AWS Infrastructure - Provision EC2 and deploy Nginx container**
 
+GitHub branch: `terraform/project-1-deploy-ec2-simple`
+
 If using multiple AWS accounts, use env variable `AWS_PROFILE` in the shell to set the one you want to use.\
 Use `terraform fmt` to automatically format terraform files. 
 
@@ -239,6 +241,24 @@ Best practices:
 
 ## Project 2
 
+**Split into modules the Project 1**
+
+GitHub branch: `terraform/project-2-modules`
+
+1. Create `modules` directory in the root of the project
+
+2. Inside `modules` create 2 directories for each of the module named `subnet` and `webserver` respectively 
+
+3. Each module directory will have it's own `main.tf`, `variables.tf` and `outputs.tf`
+
+4. Each time a module is created or changed, you have to run `terraform init`
+
+As a best practice, you can create modules only when you want to group multiple resources in a single unit and make them highly configurable by using variables as much as possible. 
+
+---
+
+## Project 3
+
 **Deploy EKS cluster**
 
 1. Created the VPC by using the VPC module
@@ -251,4 +271,4 @@ Best practices:
 
 --- 
 
-## Project 3
+## Project 4
