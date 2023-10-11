@@ -21,8 +21,8 @@ def deployApp(String IMAGE_NAME) {
 }
 
 def deployAppWithDockerCompose(String IMAGE_NAME, String PUBLIC_IP) {
-
-    withCredentials([usernamePassword(credentialsId: "dockerhub-credentials", passwordVariable: 'PASS', usernameVariable: "USER")]) {
+    dir("./Module_12-Terraform") {
+        withCredentials([usernamePassword(credentialsId: "dockerhub-credentials", passwordVariable: 'PASS', usernameVariable: "USER")]) {
         def shellCmd = "bash my-script.sh ${IMAGE_NAME} ${PASS} ${USER}"
         def ec2server = "ec2-user@${PUBLIC_IP}"
 
@@ -33,6 +33,7 @@ def deployAppWithDockerCompose(String IMAGE_NAME, String PUBLIC_IP) {
             sh "scp -o StrictHostKeyChecking=no my-script.sh ${ec2server}:/home/ec2-user"
             sh "ssh -o StrictHostKeyChecking=no ${ec2server} ${shellCmd}"
         }
+    }
     }
 }
 
