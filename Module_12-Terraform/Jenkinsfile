@@ -71,7 +71,8 @@ pipeline {
             steps {
                 script {
                     echo "deploying java and postgres"
-                    gv.deployAppWithDockerCompose "${env.IMAGE_TAG}" "${env.EC2_PUBLIC_IP}"
+                    echo "${env.IMAGE_TAG} and ${env.EC2_PUBLIC_IP}"
+                    gv.deployAppWithDockerCompose("${env.IMAGE_TAG}", "${env.EC2_PUBLIC_IP}")
                 }
             }
         }
