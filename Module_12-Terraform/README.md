@@ -299,6 +299,7 @@ tags = {
 
 - make sure you delete the LoadBalancer provided by AWS, otherwise you cannot destroy the terraform plan for EKS. 
 - also delete the SG created by the Load Balancer before running `terraform destroy` !!!
+- set `export TF_LOG=TRACE` for debugging 
 
 --- 
 
