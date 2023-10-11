@@ -261,13 +261,44 @@ As a best practice, you can create modules only when you want to group multiple 
 
 **Deploy EKS cluster**
 
+GitHub branch: `terraform/project-2-deploy-eks-cluster`
+
 1. Created the VPC by using the VPC module
+
+- 1 Public & 1 Private subnet in each AZ
+- keep in mind that 5 IPs (first 4 and last one) from each subnet's CIDR block are reserved for AWS and cannot be assigned to any of your resources
+
+```
+tags = {
+    "kubernetes.io/cluster/myapp-eks-cluster" = "shared",
+  }
+
+  public_subnet_tags = {
+    "kubernetes.io/cluster/myapp-eks-cluster" = "shared"
+    "kubernetes.io/role/elb"                  = "1"
+  }
+
+  private_subnet_tags = {
+    "kubernetes.io/cluster/myapp-eks-cluster" = "shared"
+    "kubernetes.io/role/internal-elb"         = "1"
+  }
+```
+
+- you have to tag your VPC and Subnets in order for the Control plane (fully managed by AWS in another VPC) to connect to your Worker nodes (in your VPC)
 
 2. Created the EKS cluster and worker nodes by using the EKS module
 
+- don't forget to set `cluster_endpoint_public_access  = true` in eks module, otherwise cluster API server won't be accessible from outside (using kubectl or other k8s client) !!!
+
 3. Configured Kubernetes provider to authenticate with K8s cluster
 
+`aws eks update-kubeconfig --region <region of aws provider> --name <cluster name>` - to update your .kube/config
+
+
 4. Deployed nginx Application/Pod
+
+- make sure you delete the LoadBalancer provided by AWS, otherwise you cannot destroy the terraform plan for EKS. 
+- also delete the SG created by the Load Balancer before running `terraform destroy` !!!
 
 --- 
 
