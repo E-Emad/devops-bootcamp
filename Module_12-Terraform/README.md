@@ -340,3 +340,7 @@ For Debian and Ubuntu based distributions follow the next steps:
 - `curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -` - import Terraform key
 - `apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"` - add Terraform repo
 - `apt-get update -y && apt-get install terraform -y` - install Terraform
+
+8. Run the pipeline that will provision increment version app, build image, provision ec2 and infrastructure with Terraform and deploy the java & postgresql with docker-compose.
+
+9. TF state will be saved in Jenkins, so running the same pipeline again and again, will make no changes to the already created infrastructure. 
