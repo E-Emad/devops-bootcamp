@@ -324,6 +324,19 @@ GitHub branch: `terraform/terraform/project-5-cicd-provision-ec2`
 
 5. On the server that hosts the Jenkins (as a docker container), make sure to set RW priviledges for all the users using `sudo chmod 666 /var/run/docker.sock`. 
 
-6. Enter the Jenkins container as a root user using `docker exec -it -u 0 jenkins-container bash` and install terraform:
+6. Create AWS credentials in Jenkins and set them as env variables in order for Terraform to authenticate to AWS provider
 
-- 
+```
+environment {
+        AWS_ACCESS_KEY_ID = credentials("aws_access_key_id")
+        AWS_SECRET_ACCESS_KEY = credentials("aws_secret_access_key")
+    }
+```
+
+7. Enter the Jenkins container as a root user using `docker exec -it -u 0 jenkins-container bash` and install terraform:
+
+For Debian and Ubuntu based distributions follow the next steps:
+- `apt-get install software-properties-common gnupg2 -y` - install required dependencies
+- `curl -fsSL https://apt.releases.hashicorp.com/gpg | apt-key add -` - import Terraform key
+- `apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"` - add Terraform repo
+- `apt-get update -y && apt-get install terraform -y` - install Terraform
