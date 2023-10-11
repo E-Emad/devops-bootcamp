@@ -10,16 +10,8 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-central-1"
+  region = var.region
 }
-
-variable "vpc_cidr_block" {}
-variable "subnet_cidr_block" {}
-variable "avail_zone" {}
-variable "env_prefix" {}
-variable "instance_type" {}
-variable "key_location" {}
-
 
 resource "aws_vpc" "myapp_vpc" {
   cidr_block = var.vpc_cidr_block
@@ -64,6 +56,7 @@ resource "aws_route_table_association" "rtb_subnet_association" {
   subnet_id      = aws_subnet.myapp_subnet_1.id
 }
 
+# this will be jenkins ip when running from pipeline
 data "http" "myip" {
   url = "http://ipv4.icanhazip.com"
 }
@@ -77,9 +70,10 @@ resource "aws_security_group" "myapp_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${chomp(data.http.myip.body)}/32"]
+    cidr_blocks = ["${chomp(data.http.myip.body)}/32", "188.24.28.5/32"]
   }
 
+  # javaapp container will listen on port 8080
   ingress {
     description = "http on port 8080"
     from_port   = 8080
@@ -120,11 +114,6 @@ data "aws_ami" "amzn_linux_2023_ami" {
   }
 }
 
-resource "aws_key_pair" "myapp_key_pair" {
-    key_name   = "${var.env_prefix}-key"
-    public_key = file(var.key_location)
-}
-
 resource "aws_instance" "myapp_server" {
   ami                    = data.aws_ami.amzn_linux_2023_ami.id
   instance_type          = var.instance_type
@@ -133,14 +122,15 @@ resource "aws_instance" "myapp_server" {
   availability_zone = var.avail_zone
 
   associate_public_ip_address = true
-  key_name = aws_key_pair.myapp_key_pair.key_name
+  key_name = "jenkins-aws-key"
 
   user_data = <<-EOF
                 #!/bin/bash
                 sudo yum update -y && sudo yum install -y docker
                 sudo systemctl start docker
                 sudo usermod -aG docker ec2-user
-                sudo docker run -p 8080:80 nginx
+                sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+                sudo chmod +x /usr/local/bin/docker-compose
                 EOF
 
 user_data_replace_on_change = true
@@ -150,6 +140,6 @@ user_data_replace_on_change = true
   }
 }
 
-output "myapp_ip" {
+output "ec2_public_ip" {
     value = aws_instance.myapp_server.public_ip
 }

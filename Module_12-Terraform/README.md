@@ -307,4 +307,19 @@ tags = {
 
 **Complete CI/CD pipeline to provision EC2 and deploy apps using docker-compose**
 
+GitHub branch: `terraform/terraform/project-5-cicd-provision-ec2`
 
+1. Create key pair in AWS Console, name it `jenkins-aws-key`.
+
+- reference the key name in the `aws_instance` terraform resource in `main.tf`.
+- create Credentials in jenkins with the content of the private key associated to the `jenkins-aws-key`.
+
+2. Create `main.tf` configuration that will provision VPC, subnet, IGW, route table, SG and EC2. 
+
+- don't forget to install docker and docker-compose in the `user_data` argument of the `aws_instance` resource.
+
+3. Define the variables needed by Terraform in `variables.tf`. Provide default values. Those can be overwritten later by the Jenkins pipeline in different ways, for example setting env variable `TF_VAR_name-of-the-var=`.
+
+4. Create `docker-compose.yaml` containing javapp and postgresql. 
+
+5. 
