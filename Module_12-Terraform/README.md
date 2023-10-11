@@ -303,6 +303,27 @@ tags = {
 
 --- 
 
+## Project 4
+
+**Configure remote terraform state**
+
+1. Add the following to the terraform configuration and enable versioning
+
+```
+backend "s3" {
+    bucket = "mybucket"
+    key    = "path/to/my/key/state.tfstate"
+    region = "eu-central-1"
+  }
+```
+
+- because multiple people and a CI server can make changes to the same infrastructure using terraform, it's a best practice to store the `.tfstate` remotely. That way, everyone will have the same state of the infrastructure and making changes locally, will write to the remote state.
+- enable versioning on the s3 bucket -> you can rollback to a previous state if something break.
+
+2. Run `terraform init`
+
+---
+
 ## Project 5
 
 **Complete CI/CD pipeline to provision EC2 and deploy apps using docker-compose**
