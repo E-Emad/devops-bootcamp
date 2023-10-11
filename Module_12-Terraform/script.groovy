@@ -21,18 +21,16 @@ def deployApp(String IMAGE_NAME) {
 }
 
 def deployAppWithDockerCompose(String IMAGE_NAME, String PUBLIC_IP) {
-    def shellCmd
 
     withCredentials([usernamePassword(credentialsId: "dockerhub-credentials", passwordVariable: 'PASS', usernameVariable: "USER")]) {
-        shellCmd = "bash my-script.sh ${IMAGE_NAME} ${PASS} ${USER}"
-    }
-    
-    def ec2server = "ec2-user@${PUBLIC_IP}"
+        def shellCmd = "bash my-script.sh ${IMAGE_NAME} ${PASS} ${USER}"
+        def ec2server = "ec2-user@${PUBLIC_IP}"
 
-    sshagent(credentials: ['jenkins-aws-key']) {
-        sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2server}:/home/ec2-user"
-        sh "scp -o StrictHostKeyChecking=no my-script.sh ${ec2server}:/home/ec2-user"
-        sh "ssh -o StrictHostKeyChecking=no ${ec2server} ${shellCmd}"
+        sshagent(credentials: ['jenkins-aws-key']) {
+            sh "scp -o StrictHostKeyChecking=no docker-compose.yaml ${ec2server}:/home/ec2-user"
+            sh "scp -o StrictHostKeyChecking=no my-script.sh ${ec2server}:/home/ec2-user"
+            sh "ssh -o StrictHostKeyChecking=no ${ec2server} ${shellCmd}"
+        }
     }
 }
 
