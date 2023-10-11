@@ -322,4 +322,8 @@ GitHub branch: `terraform/terraform/project-5-cicd-provision-ec2`
 
 4. Create `docker-compose.yaml` containing javapp and postgresql. 
 
-5. 
+5. On the server that hosts the Jenkins (as a docker container), make sure to set RW priviledges for all the users using `sudo chmod 666 /var/run/docker.sock`. 
+
+6. Enter the Jenkins container as a root user using `docker exec -it -u 0 jenkins-container bash` and install terraform:
+
+- 
