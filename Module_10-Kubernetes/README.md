@@ -401,24 +401,32 @@ Info you need to know when deploying microservices into a k8s cluster:
 - 3rdparty services
 - On which port does each service run?
 
-1. Deploy any 3rd party apps
-2. Create Secret and ConfigMap components
-3. Create deployment and Service for each microservice
+The order when deploying an app composed of multiple microservices:\
+    1. Deploy any 3rd party apps\
+    2. Create Secret and ConfigMap components\
+    3. Create deployment and Service for each microservice
 
 Note: When deploying multiple similar services to K8s, you can use helm chart with 1 common template and replace specific values for each service on the fly during deployment. 
 
-1. Clone the Online shop app - https://github.com/nanuchi/microservices-demo
+1. Find the manifests of the online shop (deployment and service) here: https://github.com/nanuchi/microservices-demo/blob/master/release/kubernetes-manifests.yaml
 
-2. Create `config-all-microservices.yaml` containing Deployment and Service for all microservices
+2. Create `Module_10-Kubernetes/microservices/config-best-practices.yaml` containing Deployment and Service for all microservices
 
-3. Create a namespace and deploy all microservices there
+3. Create a cluster on EKS:
 
-4. Access the online shop using the publicIP of any Worker node and the NodePort defined.
+- `eksctl create cluster --name negru-cluster-best-practice --version 1.28 --region eu-central-1 --nodegroup-name negru-nodes --node-type t3.medium --nodes 7 --nodes-min 5 --nodes-max 15`
+- kubeconfig is automatically updated when creating the cluster with eksctl
+
+4. Create a namespace using `kubectl create namespace myapp`
+
+5. Apply the manifest containing microservices in that namespace
+
+- `kubectl apply -f Module_10-Kubernetes/microservices/config-best-practices.yaml -n myapp`
+
+6. Make sure the frontend service is of `type: LoadBalancer`. If you deployed on EKS, a Cloud native load balancer will be provisioned by AWS, being the single entrypoint to our cluster from external sources. Also you can map that ALB to a Route53 to have a nice domain name accessible. 
 
 
 Deploy using best practices: 
-
-1. Create `config-all-microservices.yaml`
 
 - Specify a pinned version on each container image - Otherwise, latest version is fetched, which makes it unpredictable and intransparent as to which versions are deployed in the cluster
 - Configure a liveness probe on each container - K8s knows the Pod state, not the application state. Sometimes pod is running, but container inside crashed. With liveness probe we can let K8s know when it needs to restart the container
@@ -429,7 +437,7 @@ Deploy using best practices:
 - Always have more than 1 Worker Node - avoid single point of failure
 - Label all your K8s resources - Have an identifier for your components to group pods and reference in Service
 - Use namespaces to group your resources
-- Ensure Images are free of vulnerabilities
+- Ensure Images are free of vulnerabilities 
 - No root access for containers - With root access they have access to host-level resources. Much more damage possible, if container gets hacked
 
 ---
