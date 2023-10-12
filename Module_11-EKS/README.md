@@ -199,15 +199,19 @@ environment {
 
 6. Create ECR repo
 
-Each repo is 1 app which can contains multiple tags
+- each repo is 1 app which can contain multiple tags of the image
 
 7. Authenticate to the ECR registry
 
 `aws ecr get-login-password | docker login --username AWS --pasword-stdin registry-URL`
 
-8. Create credentials in Jenkins for AWS name ecr-credentials
+8. Create credentials in Jenkins for AWS name ecr-credentials 
+
+- `aws ecr get-login-password --region eu-central-1` - to get the password and add it to Jenkins credentials afterwards
 
 9. Create Secret for AWS ECR
+
+- in order for k8s to pull the image hosted on the ECR, you need to create a k8s secret using the following:
 
 `kubectl create secret docker-registry my-registry-key-ecr --docker-server=registry-URL --docker-username=AWS --docker-password=password`
 

@@ -44,21 +44,23 @@ pipeline {
         stage("build docker image") {
             steps {
                 script {
-                    echo "building image"
-                     withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
-                    //note: usernamePassword() requires the credentials to be of the kind "username with password".
-                        sh "docker build -t ${ECR_URL}/java-maven-app:${IMAGE_NAME} ."
-                        sh "echo $PASS | docker login -u $USER --password-stdin ${ECR_URL}"
-                        sh "docker push ${ECR_URL}/java-maven-app:${IMAGE_NAME}"
-                    }
+                    dir("Module_8-CICD_with_Jenkins/java-maven-app-master/") {
+                        echo "building image"
+                        withCredentials([usernamePassword(credentialsId: 'ecr-credentials', passwordVariable: 'PASS', usernameVariable: 'USER')]) {
+                        //note: usernamePassword() requires the credentials to be of the kind "username with password".
+                            sh "docker build -t ${ECR_URL}/java-maven-app:${IMAGE_NAME} ."
+                            sh "echo $PASS | docker login -u $USER --password-stdin ${ECR_URL}" // if ECR_URL not specified, dockerhub.io is by default
+                            sh "docker push ${ECR_URL}/java-maven-app:${IMAGE_NAME}"
+                        }
+                    }   
                 }
             }
         }
 
         stage("deploy the image") {
             environment {
-                AWS_ACCESS_KEY_ID = credentials('jenkins_aws_access_key_id')
-                AWS_SECRET_ACCESS_KEY = credentials('jenkins_aws_secret_access_key')
+                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
                 APP_NAME = 'java-maven-app'
             }
             steps {
