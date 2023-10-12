@@ -8,8 +8,8 @@ import schedule
 
 EMAIL_ADDRESS = os.environ.get('EMAIL_ADDRESS')
 EMAIL_PASSWORD = os.environ.get('EMAIL_PASSWORD')
-LINODE_TOKEN = os.environ.get('LINODE_TOKEN')
 SERVER_URL = os.environ.get('SERVER_URL')
+EC2_PUBLIC_IP = os.environ.get('EC2_PUBLIC_IP')
 
 ec2_client = boto3.client("ec2", region_name="eu-west-1")
 ec2_resource = boto3.resource("ec2", region_name="eu-west-1")
@@ -46,12 +46,12 @@ def send_notification(email_msg):
         message = f"Subject: NGINX SERVER IS DOWN\n{email_msg}"
         smtp.sendmail(EMAIL_ADDRESS, EMAIL_ADDRESS, message)
 
-
+# if the app returns 5xx status codes
 def restart_container():
     print('Restarting the application...')
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(hostname='172.162.0.126', username='root', key_filename='~/.ssh/id_rsa')
+    ssh.connect(hostname=EC2_PUBLIC_IP, username='ec2-user', key_filename='~/.ssh/id_rsa')
     stdin, stdout, stderr = ssh.exec_command('docker start nginx-server')
     print(stdout.readlines())
     ssh.close()
@@ -59,6 +59,7 @@ def restart_container():
 
 def monitor_application():
     try:
+        # if the container is down we won't even reach the server
         response = requests.get(SERVER_URL)
         if response.status_code == 200:
             print('Application is running successfully!')
