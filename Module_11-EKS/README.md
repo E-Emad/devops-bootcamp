@@ -142,6 +142,8 @@ Before passing the yaml file to kubectl, you need to substitute all the env vari
 `envsubst < kubernetes/deployment.yaml | kubectl apply -f -` - substitute all the env variables values in the yaml file and give that file to kubectl\
 `envsubst < kubernetes/service.yaml | kubectl apply -f -`
 
+- `apt-get install gettext-base` - to install envsubst on a Debian distro
+
 ```
 stage("deploy the image") {
             environment {
@@ -216,3 +218,5 @@ environment {
 `kubectl create secret docker-registry my-registry-key-ecr --docker-server=registry-URL --docker-username=AWS --docker-password=password`
 
 10. Use the Jenkinsfile-ECR 
+
+- make sure you have installed `envsubst` in Jenkins container
