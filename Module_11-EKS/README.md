@@ -217,6 +217,9 @@ environment {
 
 `kubectl create secret docker-registry my-registry-key-ecr --docker-server=registry-URL --docker-username=AWS --docker-password=password`
 
-10. Use the Jenkinsfile-ECR 
+- this step is not necesarry when your cluster is on EKS and your private repo for images on ECR (both being AWS services they integrate natively). 
+- if you created the EKS cluster with eksctl, your node groups have a role `AmazonEC2ContainerRegistryReadOnly` attached to pull the images. 
 
-- make sure you have installed `envsubst` in Jenkins container
+10. Jenkinsfile path used: `Module_11-EKS/Jenkinsfile-ECR` 
+
+- make sure you have installed `envsubst` in Jenkins container !
