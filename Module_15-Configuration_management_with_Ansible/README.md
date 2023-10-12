@@ -160,10 +160,13 @@ Ansible file: `deploy-node-app.yaml`
 
 1. Create EKS cluster with Terraform
 
-- switch to `terraform/project-3-deploy-eks-cluster` branch and run `terraform apply` to provision EKS cluster on AWS
+- switch to `terraform/project-3-deploy-eks-cluster` branch and run `terraform apply` in the `Module_12-Terraform` directory to provision EKS cluster on AWS
+- run `aws eks update-kubeconfig --name myapp-eks-cluster --region eu-central-1` to update your local kube config file needed to authenticate with the cluster
 
 2. Write Ansible Play to deploy application in a new K8s namespace
 
+- `Kubernetes.Core` - the collection used
+- `ansible-galaxy collection install kubernetes.core` - to install the collection
 - to authenticate to the cluster, you either add `kubeconfig` key with the path to the kubeconfig file in your play or set the environemnt variable `K8S_AUTH_KUBECONFIG`. 
 
 --- 
