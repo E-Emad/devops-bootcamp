@@ -222,4 +222,5 @@ environment {
 
 10. Jenkinsfile path used: `Module_11-EKS/Jenkinsfile-ECR` 
 
+- `imagePullPolicy: Always` is used to always pull the image tag from the repository
 - make sure you have installed `envsubst` in Jenkins container !
