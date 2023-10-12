@@ -165,18 +165,50 @@ stage("deploy the image") {
 
 **Complete CI/CD Pipeline with EKS and AWS ECR**
 
-1. Create ECR repo
+1. Make sure you have an EKS cluster already created. Either use Terraform or eksctl - easier than creating all the roles, nodes, vpc, etc from scratch. 
+
+- use `eksctl create cluster --name negru-cluster --version 1.28 --region eu-central-1 --nodegroup-name negru-nodes --node-type t2.micro --nodes 2 --nodes-min 1 --nodes-max 3`.
+- make sure to set correct AWS user in the current shell if you have multiple accounts. Set `export AWS_PROFILE=negruandreiuser`.
+
+2. Install `kubectl` inside Jenkins container
+
+- `curl -LO https://dl.k8s.io/release/v1.28.2/bin/linux/amd64/kubectl` - install v.1.28.2 on a Debian distro
+- `chmod +x ./kubectl` - add execute permission
+- `mv ./kubectl /usr/local/bin/kubectl`
+
+3. Install `aws-iam-authenticator` inside Jenkins container. This is needed in order to autheticate with AWS.
+
+- `curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64` - install aws-iam-authenticator on Debian
+- `chmod +x ./aws-iam-authenticator`
+- `mv ./aws-iam-authenticator /usr/local/bin/aws-iam-authenticator`
+
+4. Make sure you have the kubeconfig correctly set in the Jenkins container. This is needed in order for `kubectl` to connect to the cluster.
+
+- `scp -i ~/.ssh/aws-key-m2.pem ~/.kube/config ec2-user@3.120.209.48:/home/ec2-user/config` - copy your local kube config to the EC2 that hosts the Jenkins container
+- `docker cp config 9bbe478076d4:/var/jenkins_home/.kube/` - copy the kube config on the EC2 to the Jenkins (make sure you create first .kube directory in that location in Jenkins)
+
+5. Create AWS credentials in Jenkins UI and reference them in the pipeline
+
+```
+environment {
+                AWS_ACCESS_KEY_ID = credentials('aws_access_key_id')
+                AWS_SECRET_ACCESS_KEY = credentials('aws_secret_access_key')
+                APP_NAME = 'java-maven-app'
+            }
+``` 
+
+6. Create ECR repo
 
 Each repo is 1 app which can contains multiple tags
 
-2. Authenticate to the ECR registry
+7. Authenticate to the ECR registry
 
 `aws ecr get-login-password | docker login --username AWS --pasword-stdin registry-URL`
 
-3. Create credentials in Jenkins for AWS name ecr-credentials
+8. Create credentials in Jenkins for AWS name ecr-credentials
 
-4. Create Secret for AWS ECR
+9. Create Secret for AWS ECR
 
 `kubectl create secret docker-registry my-registry-key-ecr --docker-server=registry-URL --docker-username=AWS --docker-password=password`
 
-5. Use the Jenkinsfile-ECR 
+10. Use the Jenkinsfile-ECR 
