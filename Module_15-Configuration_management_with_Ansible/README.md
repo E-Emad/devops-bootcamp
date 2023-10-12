@@ -10,6 +10,8 @@ Modules are reusable, standalone scripts that Ansible runs on your behalf. They 
 
 A Playbook groups mutiple modules together and executes them in order from top to bottom.\
 
+Instal Ansible either by running `brew install ansible` on macos or `pip install ansible` for any other os. 
+
 **HOSTS** defines where the tasks get executed\
 **REMOTE_USER** defines with which user the tasks should be executed\
 
@@ -63,6 +65,11 @@ Colletions can be released & installed independent from other colletions.\
 - reference variable using double curly braces
 
 You can set variables directly in the Playbook, on the command line or using external variable configuration file like Terraform.
+
+Extra materials:
+ - https://aap2.demoredhat.com/decks/ansible_best_practices.pdf
+ - https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
+ - https://www.ansible.com/blog/ansible-best-practices-essentials
 
 ## Project 1
 
@@ -152,6 +159,8 @@ Ansible file: `deploy-node-app.yaml`
 **Automate K8s deployment**
 
 1. Create EKS cluster with Terraform
+
+- switch to `terraform/project-3-deploy-eks-cluster` branch and run `terraform apply` to provision EKS cluster on AWS
 
 2. Write Ansible Play to deploy application in a new K8s namespace
 
