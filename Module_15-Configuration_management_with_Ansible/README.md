@@ -231,7 +231,7 @@ vim credentials  // paste here your aws access key id and secret access key
 5. Create step in Jenkinsfile to copy `ansible.cfg`, `inventory_aws_ec2.yaml` and `deploy-docker-from-jenkins.yaml` from Jenkins server to Ansible server. 
 
 - don't forget to copy also the `managed-ec2` from Jenkins to Ansible in order for Ansible to manage the EC2s. 
-- use single quotes when copying the key, otherwise groovy will expose that key in the shell history which is not secure!
+- if you want to use a sensitive variable and an environment variable in a same shell command, you could still use double quotes (" ") but make sure you escape the $ of the sensitive variable with `\` - in this case it will not be interpolated on the level of groovy and will be passed as is to the shell and environment variable will be used on the level of shell.
 
 ```
 script {
@@ -239,13 +239,15 @@ script {
         sshagent(credentials: ['ansible-connection']) {
         sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu"
         withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
-                sh 'scp $keyfile ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key-temp.pem'
+                sh "scp \$keyfile ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key-temp.pem"
                 sh "ssh ubuntu@${ANSIBLE_SERVER_ADDRESS} 'mv ssh-key-temp.pem ssh-key.pem && rm -f ssh-key-temp.pem'"
             }
         }
     }
-} 
+}
 ```
 
 - because when copying the keyfile from Jenkins to Ubuntu server using the ubuntu user, the keyfile will have only R permissions for ubuntu and subsequent runs of the pipeline will fail to copy a new keyfile to that location. To overcome this, first copy the keyfile in a temporary location then ssh into the server to rename that keyfile to the one that Ansible will use and remove the temporary keyfile. 
+
+6. Create the step that executes `ansible-playbook` on the Jenkinsfile using SSH Pipeline steps that facilitates command execution for continuous delivery.
 

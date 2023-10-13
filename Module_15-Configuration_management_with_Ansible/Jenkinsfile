@@ -26,5 +26,22 @@ pipeline {
                 }
             }
         }
+
+        stage("Execute ansible playbook") {
+            steps {
+                script {
+                    def remote[:]
+                    remote.name = "ansible-server"
+                    remote.host = "$ANSIBLE_SERVER_ADDRESS"
+                    remote.allowAnyHosts = true
+
+                    withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
+                        remote.user = user
+                        remote.identityFile = keyfile
+                        sshCommand remote: remote, command: "ls -la"
+                    }
+                }
+            }
+        }
     }   
 }
