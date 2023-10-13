@@ -239,10 +239,13 @@ script {
         sshagent(credentials: ['ansible-connection']) {
         sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu"
         withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
-                sh 'scp $keyfile ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key.pem'
+                sh 'scp $keyfile ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key-temp.pem'
+                sh "ssh ubuntu@${ANSIBLE_SERVER_ADDRESS} 'mv ssh-key-temp.pem ssh-key.pem && rm ssh-key-temp.pem'"
             }
         }
     }
 } 
 ```
+
+
 
