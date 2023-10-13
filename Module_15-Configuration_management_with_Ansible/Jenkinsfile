@@ -30,7 +30,7 @@ pipeline {
         stage("Execute ansible playbook") {
             steps {
                 script {
-                    def remote[:]
+                    def remote = [:]
                     remote.name = "ansible-server"
                     remote.host = "$ANSIBLE_SERVER_ADDRESS"
                     remote.allowAnyHosts = true
