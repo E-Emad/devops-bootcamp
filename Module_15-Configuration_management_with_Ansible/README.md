@@ -167,6 +167,25 @@ Ansible file: `deploy-node-app.yaml`
 
 - `Kubernetes.Core` - the collection used
 - `ansible-galaxy collection install kubernetes.core` - to install the collection
-- to authenticate to the cluster, you either add `kubeconfig` key with the path to the kubeconfig file in your play or set the environemnt variable `K8S_AUTH_KUBECONFIG`. 
+- you can write the whole k8s configuration in an Ansile play as both uses same syntax
+- By default the Kubernetes Rest Client will look for ~/.kube/config, and if found, connect using the active context. You can override the location of the file using the kubeconfig parameter, and the context, using the context parameter
+
+- make sure you have installed on your local machine
+```
+
+
+    python >= 3.6
+
+    kubernetes >= 12.0.0
+
+    PyYAML >= 3.11
+
+    jsonpatch
+
+
+```
+- `hosts: localhost` - you don't need to specify any worker node or master because ansible with connect to the cluster using kubeconfig
+
+3. Run `ansible-playbook deploy-to-k8s.yaml`
 
 --- 
