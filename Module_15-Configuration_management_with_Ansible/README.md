@@ -189,3 +189,59 @@ Ansible file: `deploy-node-app.yaml`
 3. Run `ansible-playbook deploy-to-k8s.yaml`
 
 --- 
+
+## Project 6
+
+**Ansible Integration in Jenkins**
+
+1. Make sure you have a Jenkins server up and running
+
+- if not, follow the steps to create one as a Docker container found here: `Module_8-CICD_with_Jenkins/README.md`
+
+2. Create an ubuntu server on AWS that will host Ansible
+
+- `ssh -i .ssh/aws-key-m2.pem ubuntu@18.195.35.242` and install Ansilbe and boto3 package:
+```
+sudo apt update
+sudo apt install software-properties-common -y
+sudo add-apt-repository --yes --update ppa:ansible/ansible
+sudo apt install ansible -y 
+
+sudo apt install python3-pip -y
+pip3 install boto3
+```
+
+- we need AWS credentials available on the Ansible control node because of the dynamic inventory 
+
+```
+mkdir .aws
+vim credentials  // paste here your aws access key id and secret access key
+```
+
+3. Create 2 EC2 instances that will be managed by Ansible Control Node
+
+- create a new key pair `ansible-jenkins` - private key will be provided to Ansible in order to connect with those 2 instances
+
+4. Create Jenkins credentials in UI with `aws-key-m2.pem` used to connect to the Anisble server name it `ansible-connection` (of type shh user with password)
+
+5. Create Jenkins credentials in UI with `ansible-jenkins.pem` used by Ansible to connect to the managed EC2 instances. Name it `managed-ec2`. 
+
+- this key will need to be copied from Jenkins server to Ansible server and used in the `ansible.cfg` to `private_key_file = ~/ssh-key.pem`. 
+
+5. Create step in Jenkinsfile to copy `ansible.cfg`, `inventory_aws_ec2.yaml` and `deploy-docker-from-jenkins.yaml` from Jenkins server to Ansible server. 
+
+- don't forget to copy also the `managed-ec2` from Jenkins to Ansible in order for Ansible to manage the EC2s. 
+
+```
+script {
+    dir("Module_15-Configuration_management_with_Ansible") {
+        sshagent(credentials: ['ansible-connection']) {
+        sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user"
+        withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
+                sh "scp ${keyfile} ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user/ssh-key.pem"
+            }
+        }
+    }
+    }   
+```
+

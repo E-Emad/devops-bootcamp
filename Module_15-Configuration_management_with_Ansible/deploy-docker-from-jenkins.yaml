@@ -1,0 +1,17 @@
+- name: Install Docker, Docker-compose
+  hosts: all
+  become: True 
+  tasks:
+    - name: Install Docker
+      ansible.builtin.yum:
+        name: docker
+        update_cache: True
+        state: present 
+    - name: Install Docker-compose
+      ansible.builtin.get_url:
+        url: https://github.com/docker/compose/releases/download/1.23.2/docker-compose-{{ansible_system}}-{{ansible_architecture}}
+        dest: /usr/local/bin/docker-compose
+        mode: +x
+      register: status
+    - ansible.builtin.debug: msg={{status.url}}
+    
