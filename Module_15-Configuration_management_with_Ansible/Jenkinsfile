@@ -7,7 +7,7 @@ pipeline {
     }
 
     environment {
-        ANSIBLE_SERVER_ADDRESS = "18.195.35.242"
+        ANSIBLE_SERVER_ADDRESS = "18.195.35.242" // ubuntu distro
     }
 
     stages {
@@ -16,9 +16,9 @@ pipeline {
                 script {
                     dir("Module_15-Configuration_management_with_Ansible") {
                         sshagent(credentials: ['ansible-connection']) {
-                        sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user"
+                        sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu"
                         withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
-                                sh "scp ${keyfile} ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user/ssh-key.pem"
+                                sh "scp ${keyfile} ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key.pem"
                             }
                         }
                     }
