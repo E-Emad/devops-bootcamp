@@ -251,3 +251,16 @@ script {
 
 6. Create the step that executes `ansible-playbook` on the Jenkinsfile using SSH Pipeline steps that facilitates command execution for continuous delivery.
 
+When using the SSH Pipeline steps plugin with `sshUserPrivateKey` passed to `withCredentials` I got `com.jcraft.jsch.JSchException: Auth fail`.\
+In order to debug this further, connect to the ubuntu server where Ansible is running and check the logs of the ssh deamon: `cat /var/log/auth.log`.
+
+In the logs you can see the following from the connection comming from the Jenkins Server:
+
+```
+ip-172-31-11-170 sshd[9989]: userauth_pubkey: key type ssh-rsa not in PubkeyAcceptedAlgorithms [preauth]
+ip-172-31-11-170 sshd[9989]: error: Received disconnect from 3.120.209.48 port 53972:3: com.jcraft.jsch.JSchException: Auth fail [preauth]
+```
+
+To fix it you have to add `PubkeyAcceptedAlgorithms +ssh-rsa` in the ssh configuration: `/etc/ssh/sshd_config`.
+Restart the ssh deamon after that: `sudo systemctl restart sshd`.
+

@@ -30,24 +30,10 @@ pipeline {
         stage("Execute ansible playbook") {
             steps {
                 script {
-                    // def remote = [:]
-                    // remote.name = "ansible-server"
-                    // remote.host = "${env.ANSIBLE_SERVER_ADDRESS}"
-                    // remote.allowAnyHosts = true
-
                     def remote = [:]
-                    remote.name = "node-1"
+                    remote.name = "ansible-control-node"
                     remote.host = "${env.ANSIBLE_SERVER_ADDRESS}"
                     remote.allowAnyHosts = true
-
-                    // withCredentials([sshUserPrivateKey(credentialsId: "ansible-connection", keyFileVariable: "keyfile", usernameVariable: "user")]) {
-                    //     remote.user = user
-                    //     remote.identityFile = keyfile
-                    //     sh("echo ${remote}")
-                    //     sshCommand remote: remote, command: "sudo ls -la"
-                    // }
-
-
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ansible-connection', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
                         remote.user = userName
