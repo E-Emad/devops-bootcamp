@@ -200,7 +200,7 @@ Ansible file: `deploy-node-app.yaml`
 
 2. Create an ubuntu server on AWS that will host Ansible
 
-- `ssh -i .ssh/aws-key-m2.pem ubuntu@18.195.35.242` and install Ansilbe and boto3 package:
+- `ssh -i .ssh/ansible-key-pair.pem ubuntu@3.78.221.162` and install Ansilbe and boto3 package:
 ```
 sudo apt update
 sudo apt install software-properties-common -y
@@ -222,7 +222,7 @@ vim credentials  // paste here your aws access key id and secret access key
 
 - create a new key pair `ansible-jenkins` - private key will be provided to Ansible in order to connect with those 2 instances
 
-4. Create Jenkins credentials in UI with `aws-key-m2.pem` used to connect to the Anisble server name it `ansible-connection` (of type shh user with password)
+4. Create Jenkins credentials in UI with `ansible-key-pair` used to connect to the Anisble server name it `ansible-connection` (of type shh user with password)
 
 5. Create Jenkins credentials in UI with `ansible-jenkins.pem` used by Ansible to connect to the managed EC2 instances. Name it `managed-ec2`. 
 
