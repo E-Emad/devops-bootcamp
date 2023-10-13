@@ -231,17 +231,18 @@ vim credentials  // paste here your aws access key id and secret access key
 5. Create step in Jenkinsfile to copy `ansible.cfg`, `inventory_aws_ec2.yaml` and `deploy-docker-from-jenkins.yaml` from Jenkins server to Ansible server. 
 
 - don't forget to copy also the `managed-ec2` from Jenkins to Ansible in order for Ansible to manage the EC2s. 
+- use single quotes when copying the key, otherwise groovy will expose that key in the shell history which is not secure!
 
 ```
 script {
     dir("Module_15-Configuration_management_with_Ansible") {
         sshagent(credentials: ['ansible-connection']) {
-        sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user"
+        sh "scp -o StrictHostKeyChecking=no ansible.cfg deploy-docker-from-jenkins.yaml inventory_aws_ec2.yaml ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu"
         withCredentials([sshUserPrivateKey(credentialsId: "managed-ec2", keyFileVariable: "keyfile", usernameVariable: "user")]) {
-                sh "scp ${keyfile} ec2-user@${ANSIBLE_SERVER_ADDRESS}:/home/ec2-user/ssh-key.pem"
+                sh 'scp $keyfile ubuntu@${ANSIBLE_SERVER_ADDRESS}:/home/ubuntu/ssh-key.pem'
             }
         }
     }
-    }   
+} 
 ```
 
