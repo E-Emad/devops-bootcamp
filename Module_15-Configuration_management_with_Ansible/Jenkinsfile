@@ -32,14 +32,13 @@ pipeline {
                 script {
                     def remote = [:]
                     remote.name = "ansible-control-node"
-                    remote.host = "${env.ANSIBLE_SERVER_ADDRESS}"
+                    remote.host = env.ANSIBLE_SERVER_ADDRESS
                     remote.allowAnyHosts = true
 
                     withCredentials([sshUserPrivateKey(credentialsId: 'ansible-connection', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
                         remote.user = userName
                         remote.identityFile = identity
-                        sh("echo ${remote}")
-                        sshCommand remote: remote, command: 'for i in {1..5}; do echo -n \"Loop \$i \"; date ; sleep 1; done'
+                        sshCommand remote: remote, command: 'ansible-playbook deploy-docker-from-jenkins.yaml'
                     }
                 }
             }
