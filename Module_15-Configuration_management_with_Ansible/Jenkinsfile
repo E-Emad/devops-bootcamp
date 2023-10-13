@@ -2,10 +2,6 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven' //the value must be the same as in the Web UI
-    }
-
     environment {
         ANSIBLE_SERVER_ADDRESS = "3.78.221.162" // ubuntu distro
     }
